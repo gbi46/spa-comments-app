@@ -100,7 +100,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{% url 'comments:add_comment' %}">
+                <form id="addCommentForm" method="POST" action="{% url 'comments:add_comment' %}">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="user_name" class="form-label">User Name</label>
@@ -114,8 +114,9 @@
                         <label for="home_page" class="form-label">Home Page (опционально)</label>
                         <input type="url" class="form-control" id="home_page" name="home_page">
                     </div>
-                    <div class="mb-3">
-                        <label for="captcha" class="form-label">CAPTCHA</label>
+                    <div class="mb-3">лллллл
+                        <label for="captcha" class="form-label">CAPTCHAоооооо</label><br>
+                        <img id="captchaImage" src="" alt="CAPTCHA"><br>
                         <input type="text" class="form-control" id="captcha" name="captcha" required>
                     </div>
                     <div class="mb-3">
@@ -130,20 +131,71 @@
 </div>
 
 <script>
-  const tableHeaders = document.querySelectorAll('th[data-sort-field]');
+  document.addEventListener('DOMContentLoaded', function() {
+    const addCommentForm = document.getElementById('addCommentForm');
+    const captchaImage = document.getElementById('captchaImage');
 
-  tableHeaders.forEach(header => {
-    header.addEventListener('click', () => {
-      const sortField = header.dataset.sortField;
-      console.log(`Сортировка по полю: ${sortField}`);
-      fetch(`/comments/?sort=${sortField}`)
-        .then(response => response.text())
-        .then(html => {
-          const tableBody = document.querySelector('tbody');
-          tableBody.innerHTML = html;
+    function loadCaptcha() {
+        fetch("{% url 'comments:get_captcha' %}")
+            .then(response => response.json())
+            .then(data => {
+                captchaImage.src = data.image;
+            });
+    }
+
+    $('#addCommentModal').on('shown.bs.modal', function (e) {
+        loadCaptcha();
+    });
+
+    addCommentForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(addCommentForm);
+
+        fetch(addCommentForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                $('#addCommentModal').modal('hide');
+            } else {
+                alert(data.error);
+                loadCaptcha();
+            }
         });
     });
-  });
+
+    let formData = {
+        user_name: document.getElementById('user_name').value,
+        email: document.getElementById('email').value,
+        home_page: document.getElementById('home_page').value,
+        text: document.getElementById('text').value,
+        parent: null
+    };
+
+    fetch("{% url 'comments:add_comment' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.id) {
+            alert("Комментарий добавлен!");
+        } else {
+            alert("Ошибка: " + JSON.stringify(data));
+        }
+    })
+    .catch(error => console.error("Ошибка:", error));
+});
 </script>
 
 </body>

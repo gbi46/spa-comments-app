@@ -10,7 +10,7 @@ class Comment(models.Model):
     user_name = models.CharField(max_length=100)
     email = models.EmailField()
     home_page = models.URLField(blank=True, null=True)
-    captcha = models.CharField(max_length=100)
+    captcha = models.CharField(max_length=6)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments', null=True, blank=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     created_at = models.DateTimeField(auto_now_add=True)
