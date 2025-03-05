@@ -2,14 +2,44 @@
 node_modules/
 dist/
 
-# Compiled Python bytecode
+# Скомпилированные файлы Python
 *.py[cod]
 
-# Log files
+# Файлы логов
 *.log
 
-# JetBrains IDE
-.idea/
-
-# .env file
+# Файл .env
 .env
+
+# Виртуальное окружение
+venv/
+.env/
+.envrc
+__pycache__/
+
+# Файлы и папки IDE
+.vscode/
+.idea/
+*.iml
+
+# Файлы зависимостей и пакетов
+Pipfile
+Pipfile.lock
+poetry.lock
+
+# Файлы базы данных и миграции
+db.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+migrations/**/000*.py
+
+# Статические и медиа-файлы Django
+staticfiles/
+media/
+
+# Игнорируем файлы Docker
+*.dockerfile
+docker-compose.override.yml
