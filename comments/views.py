@@ -1,10 +1,11 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from django.views import View
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from .models import Comment
 from .utils import CommentSerializer, CommentUtil
-
+from django.contrib.auth.models import User
 from django.urls import reverse
 from django.views.generic.edit import CreateView
 from .models import Comment
@@ -14,18 +15,32 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 class AddCommentView(APIView):
-
     def post(self, request, *args, **kwargs):
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            comment = serializer.save()
+        if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            email = request.POST.get('email')
+            text = request.POST.get('text')
 
-            comment.user = request.user
+            user = User.objects.filter(email=email).first()
+
+            if not user:
+                user = User.objects.create_user(username=email, email=email)
+
+            comment = Comment(text=text, email=email)
+            comment.user = user
             comment.save()
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Комментарий успешно добавлен.',
+                'comment_text': comment.text,
+                'user': comment.user.username,
+            })
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Неверный запрос.',
+        })
+
 
 class CommentsView(View):
     template_name = 'comments/comments.html'

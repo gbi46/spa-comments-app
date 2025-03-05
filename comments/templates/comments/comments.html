@@ -164,7 +164,7 @@
             if (data.success) {
                 $('#addCommentModal').modal('hide');
             } else {
-                alert(data.error);
+                console.log(data.error);
                 loadCaptcha();
             }
         });
