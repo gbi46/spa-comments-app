@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': conf.MYSQL_DATABASE,
         'USER': conf.MYSQL_USER,
         'PASSWORD': conf.MYSQL_PASSWORD,
-        'HOST': conf.DB_HOST,
+        'HOST': 'db',
         'PORT': conf.DB_PORT,
         'OPTIONS': {
             'charset': 'utf8mb4',
