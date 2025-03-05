@@ -1,9 +1,13 @@
+from django.http import HttpResponse
 from PIL import Image, ImageDraw, ImageFont
 from rest_framework import serializers
 from .models import Comment
+import random, string
+from io import BytesIO
+from django.shortcuts import render, redirect
 
 class CommentUtil:
-    def create_captcha_image(request):
+    def create_captcha_image(self):
         # Генерирует картинку с капчей
         text = self.generate_captcha()
         
@@ -22,8 +26,8 @@ class CommentUtil:
         image.save(buffer, format="PNG")
         buffer.seek(0)
 
-    def generate_captcha():
-
+    def generate_captcha(self):
+        # Генерация текста капчи
         captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
         # Создание изображения капчи
@@ -37,7 +41,8 @@ class CommentUtil:
         image.save(buffer, format='PNG')
         image_bytes = buffer.getvalue()
 
-        return captcha_text, image_bytes
+        # Возвращаем изображение в HttpResponse
+        return HttpResponse(image_bytes, content_type="image/png")
 
     def get_all_comments():
         return Comment.objects.all()

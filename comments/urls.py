@@ -7,5 +7,5 @@ app_name = 'comments'
 urlpatterns = [
     path('', CommentsView.as_view(), name='comments_list'),
     path('add_comment/', AddCommentView.as_view(), name='add_comment'),
-    path('captcha/', CommentUtil.create_captcha_image, name='get_captcha'),
+    path('captcha/', CommentUtil.generate_captcha, name='get_captcha'),
 ]
