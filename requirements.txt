@@ -44,6 +44,7 @@ libgravatar==1.0.4
 MarkupSafe==3.0.2
 more-itertools==10.6.0
 msgpack==1.1.0
+mysqlclient==2.2.7
 numpy==2.2.3
 packaging==24.2
 pandas==2.2.3
