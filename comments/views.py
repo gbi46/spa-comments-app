@@ -3,7 +3,7 @@ from django.views import View
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from .models import Comment
-from .utils import CommentUtil
+from .utils import CommentSerializer, CommentUtil
 
 from django.urls import reverse
 from django.views.generic.edit import CreateView
@@ -12,9 +12,8 @@ from .forms import CommentForm
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import CommentSerializer
 
-class AddCommentAPIView(APIView):
+class AddCommentView(APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = CommentSerializer(data=request.data)

@@ -3,6 +3,25 @@ from rest_framework import serializers
 from .models import Comment
 
 class CommentUtil:
+    def create_captcha_image(request):
+        # Генерирует картинку с капчей
+        text = self.generate_captcha()
+        
+        image = Image.new('RGB', (150, 50), 'white')
+        draw = ImageDraw.Draw(image)
+        
+        # Используем стандартный шрифт, если нет TTF-файла
+        try:
+            font = ImageFont.truetype("arial.ttf", 30)
+        except IOError:
+            font = ImageFont.load_default()
+        
+        draw.text((20, 10), text, font=font, fill='black')
+
+        buffer = BytesIO()
+        image.save(buffer, format="PNG")
+        buffer.seek(0)
+
     def generate_captcha():
 
         captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))

@@ -1,4 +1,5 @@
-from .views import CommentsView, AddCommentView, get_captcha
+from .views import CommentsView, AddCommentView
+from .utils import CommentUtil
 from django.urls import path
 
 app_name = 'comments'
@@ -6,6 +7,5 @@ app_name = 'comments'
 urlpatterns = [
     path('', CommentsView.as_view(), name='comments_list'),
     path('add_comment/', AddCommentView.as_view(), name='add_comment'),
-    path('captcha/', include('captcha.urls')),
-    path('captcha/', get_captcha, name='get_captcha'),
+    path('captcha/', CommentUtil.create_captcha_image, name='get_captcha'),
 ]

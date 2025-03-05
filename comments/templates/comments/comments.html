@@ -11,7 +11,7 @@
 <body>
 
 <div class="container mt-5">
-    <h1 class="mb-4">Комментарии</h1>
+    <h1 class="mb-4">Комментарии5</h1>
 
     <div class="d-flex justify-content-end mb-3">
         <a href="#addCommentModal" class="btn btn-primary" data-bs-toggle="modal">Добавить комментарий</a>
@@ -116,8 +116,8 @@
                     </div>
                     <div class="mb-3">лллллл
                         <label for="captcha" class="form-label">CAPTCHAоооооо</label><br>
-                        <img id="captchaImage" src="" alt="CAPTCHA"><br>
-                        <input type="text" class="form-control" id="captcha" name="captcha" required>
+                        <img src="{% url 'comments:get_captcha' %}" alt="CAPTCHA">
+                        <input type="text" name="captcha" required>
                     </div>
                     <div class="mb-3">
                         <label for="text" class="form-label">Комментарий</label>
