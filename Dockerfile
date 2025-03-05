@@ -9,6 +9,7 @@ WORKDIR /app
 # Устанавливаем зависимости
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN django-admin startproject app .
 
 COPY . .
 
