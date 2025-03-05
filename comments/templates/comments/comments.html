@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Комментарии</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">Комментарии</h1>
+
+    <div class="d-flex justify-content-end mb-3">
+        <a href="#addCommentModal" class="btn btn-primary" data-bs-toggle="modal">Добавить комментарий</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th scope="col" data-sort-field="user_name">
+                        <a href="#" class="text-decoration-none">User Name</a>
+                    </th>
+                    <th scope="col" data-sort-field="email">
+                        <a href="#" class="text-decoration-none">E-mail</a>
+                    </th>
+                    <th scope="col" data-sort-field="date_added">
+                        <a href="#" class="text-decoration-none">Дата добавления</a>
+                    </th>
+                    <th scope="col">Комментарий</th>
+                    <th scope="col">Ответы</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in comments %}
+                <tr>
+                    <td>{{ comment.user_name }}</td>
+                    <td>{{ comment.email }}</td>
+                    <td>{{ comment.date_added }}</td>
+                    <td>{{ comment.text|truncatewords:20 }}</td>
+                    <td>
+                        <a href="#comment-{{ comment.id }}" class="btn btn-info" data-bs-toggle="collapse" aria-expanded="false" aria-controls="comment-{{ comment.id }}">
+                            Показать ответы
+                        </a>
+                    </td>
+                </tr>
+
+                <tr id="comment-{{ comment.id }}" class="collapse">
+                    <td colspan="5">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>User Name</th>
+                                    <th>E-mail</th>
+                                    <th>Дата добавления</th>
+                                    <th>Ответ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reply in comment.replies %}
+                                <tr>
+                                    <td>{{ reply.user_name }}</td>
+                                    <td>{{ reply.email }}</td>
+                                    <td>{{ reply.date_added }}</td>
+                                    <td>{{ reply.text|truncatewords:20 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <div>
+            <button class="btn btn-secondary" {% if not comments.has_previous %}disabled{% endif %}>
+                &laquo; Предыдущая
+            </button>
+            <button class="btn btn-secondary" {% if not comments.has_next %}disabled{% endif %}>
+                Следующая &raquo;
+            </button>
+        </div>
+        <div>
+            <span>Страница {{ comments.number }} из {{ comments.paginator.num_pages }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCommentModalLabel">Добавить комментарий</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'comments:add_comment' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="user_name" class="form-label">User Name</label>
+                        <input type="text" class="form-control" id="user_name" name="user_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="home_page" class="form-label">Home Page (опционально)</label>
+                        <input type="url" class="form-control" id="home_page" name="home_page">
+                    </div>
+                    <div class="mb-3">
+                        <label for="captcha" class="form-label">CAPTCHA</label>
+                        <input type="text" class="form-control" id="captcha" name="captcha" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="text" class="form-label">Комментарий</label>
+                        <textarea class="form-control" id="text" name="text" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  const tableHeaders = document.querySelectorAll('th[data-sort-field]');
+
+  tableHeaders.forEach(header => {
+    header.addEventListener('click', () => {
+      const sortField = header.dataset.sortField;
+      console.log(`Сортировка по полю: ${sortField}`);
+      fetch(`/comments/?sort=${sortField}`)
+        .then(response => response.text())
+        .then(html => {
+          const tableBody = document.querySelector('tbody');
+          tableBody.innerHTML = html;
+        });
+    });
+  });
+</script>
+
+</body>
+</html>
