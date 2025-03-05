@@ -1,48 +1,44 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from PIL import Image, ImageDraw, ImageFont
 from rest_framework import serializers
 from .models import Comment
 import random, string
 from io import BytesIO
 from django.shortcuts import render, redirect
+from django.urls import reverse
+from captcha.image import ImageCaptcha
 
 class CommentUtil:
-    def create_captcha_image(self):
-        # Генерирует картинку с капчей
-        text = self.generate_captcha()
-        
-        image = Image.new('RGB', (150, 50), 'white')
-        draw = ImageDraw.Draw(image)
-        
-        # Используем стандартный шрифт, если нет TTF-файла
-        try:
-            font = ImageFont.truetype("arial.ttf", 30)
-        except IOError:
-            font = ImageFont.load_default()
-        
-        draw.text((20, 10), text, font=font, fill='black')
-
-        buffer = BytesIO()
-        image.save(buffer, format="PNG")
-        buffer.seek(0)
-
-    def generate_captcha(self):
-        # Генерация текста капчи
+    def generate_captcha(request):
+        # Генерация случайного текста для капчи (можно использовать буквы и цифры)
         captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
         # Создание изображения капчи
-        image = Image.new('RGB', (120, 40), color=(255, 255, 255))
-        draw = ImageDraw.Draw(image)
-        font = ImageFont.load_default()
-        draw.text((10, 10), captcha_text, font=font, fill=(0, 0, 0))
+        image = ImageCaptcha(width=160, height=60)
+        
+        # Генерация изображения с текстом капчи
+        image_data = image.generate(captcha_text)
 
-        # Преобразование изображения в байты
-        buffer = BytesIO()
-        image.save(buffer, format='PNG')
-        image_bytes = buffer.getvalue()
+        # Преобразуем изображение в HTTP-ответ
+        response = HttpResponse(image_data, content_type="image/png")
+        
+        # Сохраняем капчу в сессии для дальнейшей валидации
+        request.session['captcha'] = captcha_text
+        
+        return response
 
-        # Возвращаем изображение в HttpResponse
-        return HttpResponse(image_bytes, content_type="image/png")
+    def check_captcha(request):
+        user_captcha = request.POST.get('captcha')
+        session_captcha = request.session.get('captcha')
+        
+        if user_captcha and user_captcha.lower() == session_captcha.lower():
+            # Капча введена верно
+            # Обрабатываем остальные данные формы
+            return HttpResponse("Форма отправлена успешно!")
+        else:
+            # Неверная капча
+            return HttpResponse("Неверный код с картинки. Попробуйте снова.")
+
 
     def get_all_comments():
         return Comment.objects.all()
