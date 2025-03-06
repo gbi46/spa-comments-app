@@ -1,3 +1,4 @@
+from .captcha import CaptchaUtil
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views import View
@@ -75,8 +76,9 @@ class CommentsView(View):
             return super().form_valid(form)
 
 def get_captcha(request):
-    captcha_text, image_bytes = CommentUtil.generate_captcha()
+    captcha_text, image_bytes = CaptchaUtil.generate_captcha()
     request.session['captcha_text'] = captcha_text
-    captcha_image = f"data:image/png;base64,{image_bytes.decode('latin1')}"
+    captcha_image = CaptchaUtil.get_image(image_bytes)
+    
     return JsonResponse({'image': captcha_image})
 
