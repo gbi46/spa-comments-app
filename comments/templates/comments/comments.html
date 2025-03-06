@@ -121,7 +121,7 @@
                         <label for="text" class="form-label">Комментарий</label>
                         <textarea class="form-control" id="text" name="text" rows="4" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Отправить</button>
+                    <button type="submit" class="btn btn-primary" id="submitComment">Отправить</button>
                 </form>
             </div>
         </div>
@@ -134,7 +134,7 @@
         parentCommentId = $(this).data('comment_id');
 
         if ($('#addCommentForm input[name="parent_comment_id"]').length === 0) {
-            $('#addCommentForm').append('<input type="hidden" name="parent_comment_id" value="' + parentCommentId + '">');
+            $('<input type="hidden" name="parent_comment_id" value="' + parentCommentId + '">').insertBefore('#submitComment');
         } else {
             $('#addCommentForm input[name="parent_comment_id"]').val(parentCommentId);
         }

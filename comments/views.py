@@ -26,6 +26,10 @@ class AddCommentView(APIView):
                 text = request.POST.get('text')
                 user_name = request.POST.get('user_name')
                 home_page = request.POST.get('home_page')
+                if request.POST.get('parent_comment_id'):
+                    parent_commnet_id = request.POST.get('parent_comment_id')
+                else:
+                    parent_commnet_id = 'not'
 
                 if not CaptchaUtil.check_captcha(request):
                     return JsonResponse({
