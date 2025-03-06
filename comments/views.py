@@ -74,12 +74,33 @@ class CommentsView(View):
 
     def get(self, request):
 
-        comments = Comment.objects.filter(parent_id=None)
+        sort_field = request.GET.get('sort', 'created_at')
+        sort_direction = request.GET.get('direction', 'desc')
+
+        allowed_fields = ["user_name", "email", "created_at"]
+        allowed_order = ["asc", "desc"]
+
+        if sort_field not in allowed_fields or sort_direction not in allowed_order:
+            return JsonResponse({"error": "Invalid sort parameters"}, status=400)
+
+        order_by = f"-{sort_field}" if sort_direction == "desc" else sort_field
+        comments = Comment.objects.filter(parent_id=None).order_by(order_by)
 
         for comment in comments:
             comment.replies = Comment.objects.filter(parent_id=comment.id)
+
+        def build_tree(comment):
+            return {
+                "id": comment.id,
+                "user_name": comment.user_name,
+                "email": comment.email,
+                "created_at": comment.created_at.strftime('%d-%m-%Y %H:%M:%S'),
+                "children": [build_tree(child) for child in comment.children.all().order_by(order_by)]
+            }
+
+        comment_tree = [build_tree(comment) for comment in comments]
             
-        return render(request, self.template_name, {'comments': comments})
+        return render(request, self.template_name, {'comments': comment_tree})
 
     def form_valid(self, form):
             user_name = form.cleaned_data['user_name']

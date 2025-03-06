@@ -39,7 +39,7 @@
         {% for comment in comments %}
             <div class="comment" id="comment-{{ comment.id }}">
                 <div class="comment-header">
-                    <strong>{{ comment.user_name }}</strong> ({{ comment.email }}) - {{ comment.date_added }}
+                    <strong>{{ comment.user_name }}</strong> ({{ comment.email }}) - {{ comment.created_at }}
                 </div>
                 <div class="comment-body">
                     {{ comment.text|truncatewords:20 }}
@@ -56,7 +56,7 @@
                 {% for reply in comment.replies %}
                     <div class="comment reply" id="reply-{{ reply.id }}" style="padding-left: 30px;">
                         <div class="comment-header">
-                            <strong>{{ reply.user_name }}</strong> ({{ reply.email }}) - {{ reply.date_added }}
+                            <strong>{{ reply.user_name }}</strong> ({{ reply.email }}) - {{ reply.created_at }}
                         </div>
                         <div class="comment-body">
                             {{ reply.text|truncatewords:20 }}
