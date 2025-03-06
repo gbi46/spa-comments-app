@@ -24,12 +24,9 @@ class CaptchaUtil:
         session_captcha = request.session.get('captcha')
         
         if user_captcha and user_captcha.lower() == session_captcha.lower():
-            # Капча введена верно
-            # Обрабатываем остальные данные формы
-            return HttpResponse("Форма отправлена успешно!")
+            return True
         else:
-            # Неверная капча
-            return HttpResponse("Неверный код с картинки. Попробуйте снова.")
+            return False
 
     def get_image(self, image_bytes):
         return base64.b64encode(image_bytes).decode('utf-8')

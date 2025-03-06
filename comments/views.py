@@ -25,6 +25,12 @@ class AddCommentView(APIView):
                 email = request.POST.get('email')
                 text = request.POST.get('text')
 
+                if not CaptchaUtil.check_captcha(request):
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Неверный код капчи.'
+                    })
+
                 logger.info(f'Получен новый комментарий от {email}')
 
                 user = User.objects.filter(email=email).first()
