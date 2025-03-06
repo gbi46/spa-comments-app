@@ -219,6 +219,42 @@
         })
         .catch(error => console.error('Ошибка js:', error));
     });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const sortField = urlParams.get('sort');
+    const sortDirection = urlParams.get('direction');
+
+    function setArrowDirection(button, direction) {
+        const currentIndicator = button.querySelector('.sort-indicator');
+        if (direction === 'asc') {
+            currentIndicator.textContent = '↑';
+        } else if (direction === 'desc') {
+            currentIndicator.textContent = '↓';
+        }
+    }
+
+    document.querySelectorAll('.sorting-buttons button').forEach(button => {
+        const buttonSortField = button.getAttribute('data-sort');
+        if (sortField === buttonSortField) {
+            setArrowDirection(button, sortDirection || 'asc');
+        } else {
+            setArrowDirection(button, 'asc');
+        }
+        button.addEventListener('click', function() {
+
+            const currentSortField = button.getAttribute('data-sort');
+            const currentIndicator = button.querySelector('.sort-indicator');
+            let newDirection = 'asc';
+
+            if(currentIndicator.textContent === '↑') {
+                newDirection = 'desc';
+            } else {
+                newDirection = 'asc';
+            }
+
+            window.location.href = `?sort=${buttonSortField}&direction=${newDirection}`;
+        });
+    });
 });
 </script>
 
