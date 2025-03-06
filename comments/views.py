@@ -24,6 +24,8 @@ class AddCommentView(APIView):
             try:
                 email = request.POST.get('email')
                 text = request.POST.get('text')
+                user_name = request.POST.get('user_name')
+                home_page = request.POST.get('home_page')
 
                 if not CaptchaUtil.check_captcha(request):
                     return JsonResponse({
@@ -36,9 +38,9 @@ class AddCommentView(APIView):
                 user = User.objects.filter(email=email).first()
 
                 if not user:
-                    user = User.objects.create_user(username=email, email=email)
+                    user = User.objects.create_user(email=email, username=user_name)
 
-                comment = Comment(text=text, email=email)
+                comment = Comment(text=text, email=email, user_name=user_name, home_page=home_page)
                 comment.user = user
                 comment.save()
 

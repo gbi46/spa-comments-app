@@ -101,6 +101,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div id="addCommentError" class="alert alert-danger d-none" role="alert"><ul></ul></div>
                 <form id="addCommentForm" method="POST" action="{% url 'comments:add_comment' %}">
                     {% csrf_token %}
                     <div class="mb-3">
@@ -182,12 +183,13 @@
             return response.json();
         })
         .then(data => {
-            console.log("Данные от сервера: ", data);
-
-            if (data.success) {
+            if (data.status == 'success') {
                 $('#addCommentModal').modal('hide');
+                location.reload();
             } else {
                 console.log(data.error);
+                $('#addCommentError').removeClass('d-none');
+                $('#addCommentError ul').html('<li>' + data.message + '</li>');
                 loadCaptcha();
             }
         })
