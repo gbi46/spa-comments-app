@@ -36,61 +36,12 @@
     </div>
 
     <div class="comments-list">
-        {% for comment in comments %}
-            <div class="comment" id="comment-{{ comment.id }}">
-                <div class="comment-header">
-                    <strong>{{ comment.user_name }}</strong> ({{ comment.email }}) - {{ comment.created_at }}
-                </div>
-                <div class="comment-body">
-                    {{ comment.text|truncatewords:20 }}
-                </div>
-                <div class="comment-footer">
-                    <span 
-                        class="comment-btn" style="color: blue; cursor: pointer;" 
-                        data-bs-toggle="modal" data-bs-target="#addCommentModal"
-                        data-comment_id="{{ comment.id }}">Ответить</span>
-                </div>
-            </div>
-    
-            <div class="replies">
-                {% for reply in comment.replies %}
-                    <div class="comment reply" id="reply-{{ reply.id }}" style="padding-left: 30px;">
-                        <div class="comment-header">
-                            <strong>{{ reply.user_name }}</strong> ({{ reply.email }}) - {{ reply.created_at }}
-                        </div>
-                        <div class="comment-body">
-                            {{ reply.text|truncatewords:20 }}
-                        </div>
-                        <div class="comment-footer">
-                            <span 
-                                class="reply-btn" style="color: blue; cursor: pointer;" 
-                                data-bs-toggle="modal" data-bs-target="#addCommentModal"
-                                data-comment_id="{{ reply.id }}">Ответить</span>
-                        </div>
-                    </div>
-                    
-                    {% for sub_reply in reply.replies %}
-                        <div class="comment reply" id="sub-reply-{{ sub_reply.id }}" style="padding-left: 60px;">
-                            <div class="comment-header">
-                                <strong>{{ sub_reply.user_name }}</strong> ({{ sub_reply.email }}) - {{ sub_reply.date_added }}
-                            </div>
-                            <div class="comment-body">
-                                {{ sub_reply.text|truncatewords:20 }}
-                            </div>
-                            <div class="comment-footer">
-                                <span 
-                                    class="reply-btn" style="color: blue; cursor: pointer;" 
-                                    data-bs-toggle="modal" data-bs-target="#addCommentModal"
-                                    data-comment_id="{{ sub_reply.id }}">Ответить</span>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        {% endfor %}
+        <div id="comments">
+            {% for comment in comments %}
+                {% include "comments/comment_item.html" with comment=comment %}
+            {% endfor %}
+        </div>
     </div>
-    
-    
     
     <div class="d-flex justify-content-between">
         <div>
@@ -152,7 +103,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    $(document).on('click', '#comment-btn', function() {
+    $(document).on('click', '.comment-btn', function() {
         parentCommentId = $(this).data('comment_id');
 
         if ($('#addCommentForm input[name="parent_comment_id"]').length === 0) {

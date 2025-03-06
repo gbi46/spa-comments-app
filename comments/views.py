@@ -18,6 +18,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class AddCommentView(APIView):
     def post(self, request, *args, **kwargs):
         if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -27,9 +28,9 @@ class AddCommentView(APIView):
                 user_name = request.POST.get('user_name')
                 home_page = request.POST.get('home_page')
                 if request.POST.get('parent_comment_id'):
-                    parent_commnet_id = request.POST.get('parent_comment_id')
+                    parent_comment_id = request.POST.get('parent_comment_id')
                 else:
-                    parent_commnet_id = None
+                    parent_comment_id = None
 
                 if not CaptchaUtil.check_captcha(request):
                     return JsonResponse({
@@ -44,7 +45,9 @@ class AddCommentView(APIView):
                 if not user:
                     user = User.objects.create_user(email=email, username=user_name)
 
-                comment = Comment(text=text, email=email, user_name=user_name, home_page=home_page, parent_id=parent_commnet_id)
+                parent = Comment.objects.get(id=parent_comment_id) if parent_comment_id else None
+
+                comment = Comment(text=text, email=email, user_name=user_name, home_page=home_page, parent_id=parent_comment_id, parent=parent)
                 comment.user = user
                 comment.save()
 
@@ -94,7 +97,8 @@ class CommentsView(View):
                 "id": comment.id,
                 "user_name": comment.user_name,
                 "email": comment.email,
-                "created_at": comment.created_at.strftime('%d-%m-%Y %H:%M:%S'),
+                "created_at": comment.created_at.strftime('%d-%m-%Y в %H:%M:%S'),
+                "text": comment.text,
                 "children": [build_tree(child) for child in comment.children.all().order_by(order_by)]
             }
 

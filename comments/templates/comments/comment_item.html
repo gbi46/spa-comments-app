@@ -1,0 +1,36 @@
+{% load static %}
+
+<style>
+    .comment {
+        margin: 10px 0;
+        padding: 10px;
+    }
+
+    .children {
+        margin-left: 20px;
+    }
+</style>
+
+<div class="comment" id="comment-{{ comment.id }}">
+    <div  class="comment-header" style="background-color: rgb(242, 250, 250);">
+        <strong>{{ comment.user_name }}</strong> {{ comment.created_at }}
+    </div>
+    <div class="comment-body">
+        <p>{{ comment.text }}</p>
+    </div>
+    <div class="comment-footer">
+        <span 
+            class="reply-btn" style="color: blue; cursor: pointer;" 
+            data-bs-toggle="modal" data-bs-target="#addCommentModal"
+            data-comment_id="{{ comment.id }}">Ответить
+        </span>
+    </div>
+</div>
+
+{% if comment.children %}
+    <div class="children">
+        {% for child in comment.children %}
+            {% include "comments/comment_item.html" with comment=child %}
+        {% endfor %}
+    </div>
+{% endif %}
