@@ -13,28 +13,42 @@ from .forms import CommentForm
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+import logging
+
+logger = logging.getLogger(__name__)
 
 class AddCommentView(APIView):
     def post(self, request, *args, **kwargs):
         if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            email = request.POST.get('email')
-            text = request.POST.get('text')
+            try:
+                email = request.POST.get('email')
+                text = request.POST.get('text')
 
-            user = User.objects.filter(email=email).first()
+                logger.info(f'Получен новый комментарий от {email}')
 
-            if not user:
-                user = User.objects.create_user(username=email, email=email)
+                user = User.objects.filter(email=email).first()
 
-            comment = Comment(text=text, email=email)
-            comment.user = user
-            comment.save()
+                if not user:
+                    user = User.objects.create_user(username=email, email=email)
 
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Комментарий успешно добавлен.',
-                'comment_text': comment.text,
-                'user': comment.user.username,
-            })
+                comment = Comment(text=text, email=email)
+                comment.user = user
+                comment.save()
+
+                logger.info(f'Комментарий от {email} успешно добавлен.')
+
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Комментарий успешно добавлен.',
+                    'comment_text': comment.text,
+                    'user': comment.user.username,
+                })
+            except Exception as e:
+                logger.error(f'Ошибка добавления комментария: {e}')
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ошибка добавления комментария.',
+                })
 
         return JsonResponse({
             'status': 'error',
