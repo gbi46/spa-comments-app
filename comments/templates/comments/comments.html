@@ -199,9 +199,9 @@
     .then(response => response.json())
     .then(data => {
         if (data.id) {
-            alert("Комментарий добавлен!");
+            console.log("Комментарий добавлен!");
         } else {
-            alert("Ошибка: " + JSON.stringify(data));
+            console.log("Ошибка: " + JSON.stringify(data));
         }
     })
     .catch(error => console.error("Ошибка:", error));
