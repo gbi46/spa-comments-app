@@ -75,10 +75,8 @@ class CommentsView(View):
             CommentUtil.add_comment(user_name, email, home_page, captcha, text)
             return super().form_valid(form)
 
-def get_captcha(request):
-    captcha_text, image_bytes = CaptchaUtil.generate_captcha()
-    request.session['captcha_text'] = captcha_text
-    captcha_image = CaptchaUtil.get_image(image_bytes)
-    
-    return JsonResponse({'image': captcha_image})
+class GetCaptchaView(View):
+    def get(self, request):
+        captcha_util = CaptchaUtil()
 
+        return captcha_util.get_captcha(request)

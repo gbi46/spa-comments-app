@@ -152,6 +152,32 @@
 
         const formData = new FormData(addCommentForm);
 
+        /*let formData = {
+            user_name: document.getElementById('user_name').value,
+            email: document.getElementById('email').value,
+            home_page: document.getElementById('home_page').value,
+            text: document.getElementById('text').value,
+            parent: null
+        };*/
+
+        /*fetch("{% url 'comments:add_comment' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.id) {
+                console.log("Комментарий добавлен!");
+            } else {
+                console.log("Ошибка: " + JSON.stringify(data));
+            }
+        })
+        .catch(error => console.error("Ошибка:", error));*/
+
         console.log("Данные формы: " + formData);
 
         fetch(addCommentForm.action, {
@@ -179,32 +205,6 @@
         })
         .catch(error => console.error('Ошибка js:', error));
     });
-
-    let formData = {
-        user_name: document.getElementById('user_name').value,
-        email: document.getElementById('email').value,
-        home_page: document.getElementById('home_page').value,
-        text: document.getElementById('text').value,
-        parent: null
-    };
-
-    fetch("{% url 'comments:add_comment' %}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": "{{ csrf_token }}"
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.id) {
-            console.log("Комментарий добавлен!");
-        } else {
-            console.log("Ошибка: " + JSON.stringify(data));
-        }
-    })
-    .catch(error => console.error("Ошибка:", error));
 });
 </script>
 
