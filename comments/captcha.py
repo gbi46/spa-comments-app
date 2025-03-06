@@ -1,3 +1,7 @@
+from captcha.image import ImageCaptcha
+from django.http import HttpResponse
+import random, string
+
 class CaptchaUtil:
     def generate_captcha(request):
         # Генерация случайного текста для капчи (можно использовать буквы и цифры)
@@ -30,4 +34,4 @@ class CaptchaUtil:
             return HttpResponse("Неверный код с картинки. Попробуйте снова.")
 
     def get_image(image_bytes):
-        pass
+        return base64.b64encode(image_bytes).decode('utf-8')
