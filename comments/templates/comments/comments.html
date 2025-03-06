@@ -116,7 +116,12 @@
                         <input type="url" class="form-control" id="home_page" name="home_page">
                     </div>
                     <div class="mb-3">
-                        <img src="{% url 'comments:get_captcha' %}" alt="CAPTCHA">
+                        <img 
+                            id="captchaImage" 
+                            data-url="{% url 'comments:get_captcha' %}"
+                            src="{% url 'comments:get_captcha' %}" 
+                            alt="CAPTCHA"
+                        >
                         <input type="text" name="captcha" required>
                     </div>
                     <div class="mb-3">
@@ -136,10 +141,12 @@
     const captchaImage = document.getElementById('captchaImage');
 
     function loadCaptcha() {
-        fetch("{% url 'comments:get_captcha' %}")
+        const captchaUrl = captchaImage.getAttribute('data-url');
+        console.log("URL CAPTCHA: " + captchaUrl);
+        fetch(captchaUrl)
             .then(response => response.json())
             .then(data => {
-                captchaImage.src = data.image;
+                captchaImage.src = data.captcha_image;
             });
     }
 
