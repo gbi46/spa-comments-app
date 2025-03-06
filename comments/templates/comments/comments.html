@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -18,58 +20,66 @@
         <a href="#addCommentModal" class="btn btn-primary" data-bs-toggle="modal">Добавить комментарий</a>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-bordered" id="comments-table">
-            <thead>
-                <tr>
-                    <th>Имя пользователя</th>
-                    <th>E-mail</th>
-                    <th>Дата</th>
-                    <th>Комментарий</th>
-                    <th>Ответы</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for comment in comments %}
-                    <tr>
-                        <td>{{ comment.user_name }}</td>
-                        <td>{{ comment.email }}</td>
-                        <td>{{ comment.date_added }}</td>
-                        <td>{{ comment.text|truncatewords:20 }}<br />
+    <div class="comments-list">
+        {% for comment in comments %}
+            <!-- Родительский комментарий -->
+            <div class="comment" id="comment-{{ comment.id }}">
+                <div class="comment-header">
+                    <strong>{{ comment.user_name }}</strong> ({{ comment.email }}) - {{ comment.date_added }}
+                </div>
+                <div class="comment-body">
+                    {{ comment.text|truncatewords:20 }}
+                </div>
+                <div class="comment-footer">
+                    <span 
+                        class="comment-btn" style="color: blue; cursor: pointer;" 
+                        data-bs-toggle="modal" data-bs-target="#addCommentModal"
+                        data-comment_id="{{ comment.id }}">Ответить</span>
+                </div>
+            </div>
+    
+            <!-- Дочерние комментарии -->
+            <div class="replies">
+                {% for reply in comment.replies %}
+                    <div class="comment reply" id="reply-{{ reply.id }}" style="padding-left: 30px;">
+                        <div class="comment-header">
+                            <strong>{{ reply.user_name }}</strong> ({{ reply.email }}) - {{ reply.date_added }}
+                        </div>
+                        <div class="comment-body">
+                            {{ reply.text|truncatewords:20 }}
+                        </div>
+                        <div class="comment-footer">
                             <span 
-                                id="comment-btn" style="color: blue; cursor: pointer; position: relative; left: 50%;" 
+                                class="reply-btn" style="color: blue; cursor: pointer;" 
                                 data-bs-toggle="modal" data-bs-target="#addCommentModal"
-                                data-comment_id="{{ comment.id }}">Ответить
-                            </span>
-                        </td>
-                        <td>
-                            <a href="#comment-{{ comment.id }}" class="btn btn-info" data-bs-toggle="collapse" aria-expanded="false" aria-controls="comment-{{ comment.id }}">
-                                Показать ответы
-                            </a>
-                        </td>
-                    </tr>
-        
-                    <tr id="comment-{{ comment.id }}" class="collapse">
-                        <td colspan="5">
-                            <div class="replies">
-                                {% for reply in comment.replies %}
-                                    <div class="reply">
-                                        <div class="reply-header">
-                                            <strong>{{ reply.user_name }}</strong> ({{ reply.email }}) - {{ reply.date_added }}
-                                        </div>
-                                        <div class="reply-body">
-                                            {{ reply.text|truncatewords:20 }}
-                                        </div>
-                                    </div>
-                                {% endfor %}
+                                data-comment_id="{{ reply.id }}">Ответить</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Дочерние ответы для ответов (если есть) -->
+                    {% for sub_reply in reply.replies %}
+                        <div class="comment reply" id="sub-reply-{{ sub_reply.id }}" style="padding-left: 60px;">
+                            <div class="comment-header">
+                                <strong>{{ sub_reply.user_name }}</strong> ({{ sub_reply.email }}) - {{ sub_reply.date_added }}
                             </div>
-                        </td>
-                    </tr>
+                            <div class="comment-body">
+                                {{ sub_reply.text|truncatewords:20 }}
+                            </div>
+                            <div class="comment-footer">
+                                <span 
+                                    class="reply-btn" style="color: blue; cursor: pointer;" 
+                                    data-bs-toggle="modal" data-bs-target="#addCommentModal"
+                                    data-comment_id="{{ sub_reply.id }}">Ответить</span>
+                            </div>
+                        </div>
+                    {% endfor %}
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+        {% endfor %}
     </div>
-
+    
+    
+    
     <div class="d-flex justify-content-between">
         <div>
             <button class="btn btn-secondary" {% if not comments.has_previous %}disabled{% endif %}>

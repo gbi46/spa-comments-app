@@ -1,0 +1,27 @@
+.comments-list {
+    padding-left: 20px;
+}
+
+.comment {
+    margin-bottom: 20px;
+}
+
+.comment-header {
+    font-weight: bold;
+}
+
+.comment-body {
+    margin-top: 5px;
+}
+
+.comment-footer {
+    margin-top: 10px;
+}
+
+.reply {
+    padding-left: 30px;
+}
+
+.comment .reply {
+    padding-left: 60px;
+}

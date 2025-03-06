@@ -29,7 +29,7 @@ class AddCommentView(APIView):
                 if request.POST.get('parent_comment_id'):
                     parent_commnet_id = request.POST.get('parent_comment_id')
                 else:
-                    parent_commnet_id = 'not'
+                    parent_commnet_id = None
 
                 if not CaptchaUtil.check_captcha(request):
                     return JsonResponse({
@@ -44,7 +44,7 @@ class AddCommentView(APIView):
                 if not user:
                     user = User.objects.create_user(email=email, username=user_name)
 
-                comment = Comment(text=text, email=email, user_name=user_name, home_page=home_page)
+                comment = Comment(text=text, email=email, user_name=user_name, home_page=home_page, parent_id=parent_commnet_id)
                 comment.user = user
                 comment.save()
 
@@ -74,7 +74,11 @@ class CommentsView(View):
 
     def get(self, request):
 
-        comments = Comment.objects.all()
+        comments = Comment.objects.filter(parent_id=None)
+
+        for comment in comments:
+            comment.replies = Comment.objects.filter(parent_id=comment.id)
+            
         return render(request, self.template_name, {'comments': comments})
 
     def form_valid(self, form):
