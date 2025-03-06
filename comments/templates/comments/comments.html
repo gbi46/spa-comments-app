@@ -36,7 +36,10 @@
                         <td>{{ comment.email }}</td>
                         <td>{{ comment.date_added }}</td>
                         <td>{{ comment.text|truncatewords:20 }}<br />
-                            <span style="color: blue; cursor: pointer; position: relative; left: 50%;"data-comment_id="{{ comment.id }}">Ответить
+                            <span 
+                                id="comment-btn" style="color: blue; cursor: pointer; position: relative; left: 50%;" 
+                                data-bs-toggle="modal" data-bs-target="#addCommentModal"
+                                data-comment_id="{{ comment.id }}">Ответить
                             </span>
                         </td>
                         <td>
@@ -127,6 +130,16 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    $(document).on('click', '#comment-btn', function() {
+        parentCommentId = $(this).data('comment_id');
+
+        if ($('#addCommentForm input[name="parent_comment_id"]').length === 0) {
+            $('#addCommentForm').append('<input type="hidden" name="parent_comment_id" value="' + parentCommentId + '">');
+        } else {
+            $('#addCommentForm input[name="parent_comment_id"]').val(parentCommentId);
+        }
+    });
+
     const addCommentForm = document.getElementById('addCommentForm');
     const captchaImage = document.getElementById('captchaImage');
 
