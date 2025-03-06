@@ -19,60 +19,49 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered" id="comments-table">
             <thead>
                 <tr>
-                    <th scope="col" data-sort-field="user_name">
-                        <a href="#" class="text-decoration-none">User Name</a>
-                    </th>
-                    <th scope="col" data-sort-field="email">
-                        <a href="#" class="text-decoration-none">E-mail</a>
-                    </th>
-                    <th scope="col" data-sort-field="date_added">
-                        <a href="#" class="text-decoration-none">Дата добавления</a>
-                    </th>
-                    <th scope="col">Комментарий</th>
-                    <th scope="col">Ответы</th>
+                    <th>Имя пользователя</th>
+                    <th>E-mail</th>
+                    <th>Дата</th>
+                    <th>Комментарий</th>
+                    <th>Ответы</th>
                 </tr>
             </thead>
             <tbody>
                 {% for comment in comments %}
-                <tr>
-                    <td>{{ comment.user_name }}</td>
-                    <td>{{ comment.email }}</td>
-                    <td>{{ comment.date_added }}</td>
-                    <td>{{ comment.text|truncatewords:20 }}</td>
-                    <td>
-                        <a href="#comment-{{ comment.id }}" class="btn btn-info" data-bs-toggle="collapse" aria-expanded="false" aria-controls="comment-{{ comment.id }}">
-                            Показать ответы
-                        </a>
-                    </td>
-                </tr>
-
-                <tr id="comment-{{ comment.id }}" class="collapse">
-                    <td colspan="5">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>User Name</th>
-                                    <th>E-mail</th>
-                                    <th>Дата добавления</th>
-                                    <th>Ответ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                    <tr>
+                        <td>{{ comment.user_name }}</td>
+                        <td>{{ comment.email }}</td>
+                        <td>{{ comment.date_added }}</td>
+                        <td>{{ comment.text|truncatewords:20 }}<br />
+                            <span style="color: blue; cursor: pointer; position: relative; left: 50%;"data-comment_id="{{ comment.id }}">Ответить
+                            </span>
+                        </td>
+                        <td>
+                            <a href="#comment-{{ comment.id }}" class="btn btn-info" data-bs-toggle="collapse" aria-expanded="false" aria-controls="comment-{{ comment.id }}">
+                                Показать ответы
+                            </a>
+                        </td>
+                    </tr>
+        
+                    <tr id="comment-{{ comment.id }}" class="collapse">
+                        <td colspan="5">
+                            <div class="replies">
                                 {% for reply in comment.replies %}
-                                <tr>
-                                    <td>{{ reply.user_name }}</td>
-                                    <td>{{ reply.email }}</td>
-                                    <td>{{ reply.date_added }}</td>
-                                    <td>{{ reply.text|truncatewords:20 }}</td>
-                                </tr>
+                                    <div class="reply">
+                                        <div class="reply-header">
+                                            <strong>{{ reply.user_name }}</strong> ({{ reply.email }}) - {{ reply.date_added }}
+                                        </div>
+                                        <div class="reply-body">
+                                            {{ reply.text|truncatewords:20 }}
+                                        </div>
+                                    </div>
                                 {% endfor %}
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
+                            </div>
+                        </td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
