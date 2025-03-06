@@ -152,6 +152,8 @@
 
         const formData = new FormData(addCommentForm);
 
+        console.log("Данные формы: " + formData);
+
         fetch(addCommentForm.action, {
             method: 'POST',
             body: formData,
@@ -159,15 +161,23 @@
                 'X-CSRFToken': formData.get('csrfmiddlewaretoken')
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка: ' + response.status);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log("Данные от сервера: " + data);
+
             if (data.success) {
                 $('#addCommentModal').modal('hide');
             } else {
                 console.log(data.error);
                 loadCaptcha();
             }
-        });
+        })
+        .catch(error => console.error('Ошибка js:', error));
     });
 
     let formData = {
