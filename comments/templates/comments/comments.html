@@ -20,9 +20,23 @@
         <a href="#addCommentModal" class="btn btn-primary" data-bs-toggle="modal">Добавить комментарий</a>
     </div>
 
+    <div class="sorting-buttons">
+        <button class="btn btn-link" id="sort-user-name" data-sort="user_name">
+            Имя пользователя
+            <span class="sort-indicator">↑</span>
+        </button>
+        <button class="btn btn-link" id="sort-email" data-sort="email">
+            E-mail
+            <span class="sort-indicator">↑</span>
+        </button>
+        <button class="btn btn-link" id="sort-date-added" data-sort="date_added">
+            Дата добавления
+            <span class="sort-indicator">↑</span>
+        </button>
+    </div>
+
     <div class="comments-list">
         {% for comment in comments %}
-            <!-- Родительский комментарий -->
             <div class="comment" id="comment-{{ comment.id }}">
                 <div class="comment-header">
                     <strong>{{ comment.user_name }}</strong> ({{ comment.email }}) - {{ comment.date_added }}
@@ -38,7 +52,6 @@
                 </div>
             </div>
     
-            <!-- Дочерние комментарии -->
             <div class="replies">
                 {% for reply in comment.replies %}
                     <div class="comment reply" id="reply-{{ reply.id }}" style="padding-left: 30px;">
@@ -56,7 +69,6 @@
                         </div>
                     </div>
                     
-                    <!-- Дочерние ответы для ответов (если есть) -->
                     {% for sub_reply in reply.replies %}
                         <div class="comment reply" id="sub-reply-{{ sub_reply.id }}" style="padding-left: 60px;">
                             <div class="comment-header">
