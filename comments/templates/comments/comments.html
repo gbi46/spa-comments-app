@@ -43,18 +43,21 @@
         </div>
     </div>
     
-    <div class="d-flex justify-content-between">
-        <div>
-            <button class="btn btn-secondary" {% if not comments.has_previous %}disabled{% endif %}>
-                &laquo; Предыдущая
-            </button>
-            <button class="btn btn-secondary" {% if not comments.has_next %}disabled{% endif %}>
-                Следующая &raquo;
-            </button>
-        </div>
-        <div>
-            <span>Страница {{ comments.number }} из {{ comments.paginator.num_pages }}</span>
-        </div>
+    <div style="clear: both;">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</div><br />
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <p>
+                <a href="?page=1{% if request.GET.sort %}&sort={{ request.GET.sort }}&direction={{ request.GET.direction }}{% endif %}">Первая</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}&direction={{ request.GET.direction }}{% endif %}">← Назад</a>
+            </p>
+        {% endif %}
+    
+        {% if page_obj.has_next %}
+            <p>
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}&direction={{ request.GET.direction }}{% endif %}">Вперед →</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.sort %}&sort={{ request.GET.sort }}&direction={{ request.GET.direction }}{% endif %}">Последняя</a>
+            </p>
+        {% endif %}
     </div>
 </div>
 
@@ -162,6 +165,7 @@
     });
 
     const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
     const sortField = urlParams.get('sort');
     const sortDirection = urlParams.get('direction');
 
@@ -201,7 +205,12 @@
                 newDirection = 'asc';
             }
 
-            window.location.href = `?sort=${buttonSortField}&direction=${newDirection}`;
+            if(page) {
+                window.location.href
+                    = `?page=${page}&sort=${currentSortField}&direction=${newDirection}`;
+            } else {
+                window.location.href = `?sort=${currentSortField}&direction=${newDirection}`;
+            }
         });
     });
 });

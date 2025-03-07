@@ -1,6 +1,7 @@
 from .captcha import CaptchaUtil
-from django.shortcuts import render
+from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views import View
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
@@ -74,11 +75,13 @@ class AddCommentView(APIView):
 
 class CommentsView(View):
     template_name = 'comments/comments.html'
+    COMMENTS_PER_PAGE = 25
 
     def get(self, request):
 
         sort_field = request.GET.get('sort', 'created_at')
         sort_direction = request.GET.get('direction', 'desc')
+        page_number = request.GET.get('page', 1)
 
         allowed_fields = ["user_name", "email", "created_at"]
         allowed_order = ["asc", "desc"]
@@ -89,8 +92,8 @@ class CommentsView(View):
         order_by = f"-{sort_field}" if sort_direction == "desc" else sort_field
         comments = Comment.objects.filter(parent_id=None).order_by(order_by)
 
-        for comment in comments:
-            comment.replies = Comment.objects.filter(parent_id=comment.id)
+        paginator = Paginator(comments, self.COMMENTS_PER_PAGE)
+        page_obj = paginator.get_page(page_number)
 
         def build_tree(comment):
             return {
@@ -102,9 +105,9 @@ class CommentsView(View):
                 "children": [build_tree(child) for child in comment.children.all().order_by(order_by)]
             }
 
-        comment_tree = [build_tree(comment) for comment in comments]
+        comment_tree = [build_tree(comment) for comment in page_obj]
             
-        return render(request, self.template_name, {'comments': comment_tree})
+        return render(request, self.template_name, {'comments': comment_tree, 'page_obj': page_obj})
 
     def form_valid(self, form):
             user_name = form.cleaned_data['user_name']
