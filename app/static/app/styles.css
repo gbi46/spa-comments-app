@@ -1,0 +1,54 @@
+.comments-list {
+    padding-left: 20px;
+}
+    
+.comment-header {
+    font-weight: bold;
+}
+
+.comment-body {
+    margin-top: 5px;
+}
+
+.comment-footer {
+    margin-top: 10px;
+}
+
+.reply {
+    padding-left: 30px;
+}
+
+.comment .reply {
+    padding-left: 60px;
+}
+.comment {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+.children {
+    margin-left: 30px;
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #333;
+}
+
+.pagination a:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination span {
+    margin: 0 10px;
+    font-weight: bold;
+}
