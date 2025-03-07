@@ -1,11 +1,7 @@
-# Используем официальный образ Python
 FROM python:3.12
 
-RUN apt-get update && apt-get install -y netcat
-
-COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
-
-RUN chmod +x /usr/local/bin/wait-for-it.sh
+RUN apt-get update && apt-get install -y curl \
+    && curl -sSL https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar -xzC /usr/local/bin
 
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
