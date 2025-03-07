@@ -6,6 +6,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
 
+APP_MODE=os.getenv('APP_MODE')
 MYSQL_ROOT_PASSWORD=os.getenv('MYSQL_ROOT_PASSWORD')
 MYSQL_DATABASE=os.getenv('MYSQL_DATABASE')
 MYSQL_USER=os.getenv('MYSQL_USER')
