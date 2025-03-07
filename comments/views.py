@@ -9,6 +9,8 @@ from .models import Comment
 from .utils import CommentSerializer, CommentUtil
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import CreateView
 from .models import Comment
 from .forms import CommentForm
@@ -19,7 +21,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
+@method_decorator(csrf_protect, name='dispatch')
 class AddCommentView(APIView):
     def post(self, request, *args, **kwargs):
         if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
