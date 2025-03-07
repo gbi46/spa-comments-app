@@ -2,8 +2,9 @@ from django.db import models
 
 from django.db import models
 from django.contrib.auth.models import User
-import re
 from django.core.exceptions import ValidationError
+import bleach
+import re
 
 class Comment(models.Model):
     text = models.TextField()
@@ -30,4 +31,8 @@ class Comment(models.Model):
             raise ValidationError('HTML теги не допускаются в тексте комментария, за исключением разрешённых.')
 
         super().clean()
+
+    def save(self, *args, **kwargs):
+        self.text = bleach.clean(self.text, tags=['i', 'a', 'code', 'strong'], attributes={'a': ['href', 'title']})
+        super().save(*args, **kwargs)
 
