@@ -26,12 +26,13 @@ SECRET_KEY = 'django-insecure-hx%&d4ol7%f=)#dfvzzgjn&x%8=(-geg41_xselh+g@mu7kuyu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'comments',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,7 +56,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,7 +81,7 @@ DATABASES = {
         'NAME': conf.MYSQL_DATABASE,
         'USER': conf.MYSQL_USER,
         'PASSWORD': conf.MYSQL_PASSWORD,
-        'HOST': conf.DB_HOST,
+        'HOST': 'db',
         'PORT': conf.DB_PORT,
         'OPTIONS': {
             'charset': 'utf8mb4',
@@ -129,3 +130,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+X_FRAME_OPTIONS = 'DENY'
+SECURE_BROWSER_XSS_FILTER = True
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
