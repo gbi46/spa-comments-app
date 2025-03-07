@@ -1,6 +1,7 @@
 services:
   web:
     build: .
+    restart: always
     ports:
       - "8000:8000"
     volumes:
@@ -16,6 +17,7 @@ services:
 
   db:
     image: mysql:8.0
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
