@@ -25,48 +25,68 @@ logger = logging.getLogger(__name__)
 class AddCommentView(APIView):
     def post(self, request, *args, **kwargs):
         if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            try:
-                email = request.POST.get('email')
-                text = request.POST.get('text')
-                user_name = request.POST.get('user_name')
-                home_page = request.POST.get('home_page')
-                if request.POST.get('parent_comment_id'):
-                    parent_comment_id = request.POST.get('parent_comment_id')
-                else:
-                    parent_comment_id = None
+            form = CommentForm(request.POST or None, request.FILES, request=request)
+            if form.is_valid():
+                comment = form.save()
+                try:
+                    email = request.POST.get('email')
+                    text = request.POST.get('text')
+                    user_name = request.POST.get('user_name')
+                    home_page = request.POST.get('home_page')
+                    if request.POST.get('parent_comment_id'):
+                        parent_comment_id = request.POST.get('parent_comment_id')
+                    else:
+                        parent_comment_id = None
 
-                if not CaptchaUtil.check_captcha(request):
+                    if not CaptchaUtil.check_captcha(request):
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'Неверный код капчи.'
+                        })
+
+                    logger.info(f'Получен новый комментарий от {email}')
+
+                    user = User.objects.filter(email=email).first()
+
+                    if not user:
+                        user = User.objects.create_user(email=email, username=user_name)
+
+                    parent = Comment.objects.get(id=parent_comment_id) if parent_comment_id else None
+
+                    if 'file' in request.FILES:
+                        file = request.FILES['file']
+                    else:
+                        file = None
+
+                    comment = Comment(
+                        file=file, text=text, email=email, user_name=user_name, home_page=home_page, 
+                        parent_id=parent_comment_id, parent=parent
+                    )
+                    comment.user = user
+                    comment.save()
+
+                    logger.info(f'Комментарий от {email} успешно добавлен.')
+
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': 'Комментарий успешно добавлен.',
+                        'comment_text': comment.text,
+                        'user': comment.user.username,
+                })
+                except Exception as e:
+                    logger.error(f'Ошибка добавления комментария 77: {e}')
                     return JsonResponse({
                         'status': 'error',
-                        'message': 'Неверный код капчи.'
+                        'message': 'Ошибка добавления комментария 80.',
                     })
-
-                logger.info(f'Получен новый комментарий от {email}')
-
-                user = User.objects.filter(email=email).first()
-
-                if not user:
-                    user = User.objects.create_user(email=email, username=user_name)
-
-                parent = Comment.objects.get(id=parent_comment_id) if parent_comment_id else None
-
-                comment = Comment(text=text, email=email, user_name=user_name, home_page=home_page, parent_id=parent_comment_id, parent=parent)
-                comment.user = user
-                comment.save()
-
-                logger.info(f'Комментарий от {email} успешно добавлен.')
-
-                return JsonResponse({
-                    'status': 'success',
-                    'message': 'Комментарий успешно добавлен.',
-                    'comment_text': comment.text,
-                    'user': comment.user.username,
-                })
-            except Exception as e:
-                logger.error(f'Ошибка добавления комментария: {e}')
+            else:
+                logger.error(f'Ошибка добавления комментария 83: {form.errors}')
+                errors = []
+                for field, messages in form.errors.items():
+                    errors.extend(messages)
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Ошибка добавления комментария.',
+                    'message': f'Ошибка добавления комментария 86: {errors}',
                 })
 
         return JsonResponse({

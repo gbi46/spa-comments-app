@@ -2,6 +2,10 @@ from django import forms
 from .models import Comment
 
 class CommentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
     user_name = forms.CharField(max_length=100, required=True, label="Пользователь")
     email = forms.EmailField(required=True, label="E-mail")
     home_page = forms.URLField(required=False, label="Веб страница")
@@ -20,10 +24,10 @@ class CommentForm(forms.ModelForm):
         return user_name
 
     def clean_captcha(self):
-        entered_text = self.cleaned_data.get('captcha')
-        correct_text = cache.get("captcha_text")
+        entered_text = self.cleaned_data.get('captcha').lower()
+        correct_text = self.request.session.get("captcha").lower()
 
         if entered_text != correct_text:
-            raise forms.ValidationError("Неверный код капчи!")
+            raise forms.ValidationError(f"Неверный код капчи!")
 
         return entered_text

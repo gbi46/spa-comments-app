@@ -10,7 +10,7 @@ def validate_image(image):
     width, height = get_image_dimensions(image)
     valid_formats = ['image/jpeg', 'image/gif', 'image/png']
 
-    if image.content_type not in valid_formats:
+    if image.file.content_type not in valid_formats:
         raise ValidationError("Недопустимый формат изображения. Допустимые форматы: JPG, GIF, PNG.")
     
     if width > 320 or height > 240:
@@ -29,8 +29,19 @@ def validate_txt_file(file):
     if not file.name.endswith('.txt'):
         raise ValidationError("Файл должен быть в формате .txt.")
 
+def validate_file(file):
+    valid_image_formats = ['image/jpeg', 'image/png', 'image/gif']
+    valid_txt_format = 'text/plain'
+
+    if file.file.content_type in valid_image_formats:
+        validate_image(file)
+    elif file.file.content_type == valid_txt_format:
+        validate_txt_file(file)
+    else:
+        raise ValidationError("Недопустимый формат файла. Допустимые форматы: JPG, GIF, PNG, TXT.")
+
 class Comment(models.Model):
-    file = models.FileField(upload_to='uploads/', null=True, blank=True, validators=[validate_image, validate_txt_file])
+    file = models.FileField(upload_to='uploads/', null=True, blank=True, validators=[validate_file])
     text = models.TextField()
     user_name = models.CharField(max_length=100)
     email = models.EmailField()
