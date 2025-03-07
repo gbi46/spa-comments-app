@@ -23,15 +23,15 @@
     <div class="sorting-buttons">
         <button class="btn btn-link" id="sort-user-name" data-sort="user_name">
             Имя пользователя
-            <span class="sort-indicator">↑</span>
+            <span class="sort-indicator"></span>
         </button>
         <button class="btn btn-link" id="sort-email" data-sort="email">
             E-mail
-            <span class="sort-indicator">↑</span>
+            <span class="sort-indicator"></span>
         </button>
-        <button class="btn btn-link" id="sort-date-added" data-sort="date_added">
+        <button class="btn btn-link" id="sort-date-added" data-sort="created_at">
             Дата добавления
-            <span class="sort-indicator">↑</span>
+            <span class="sort-indicator"></span>
         </button>
     </div>
 
@@ -165,6 +165,11 @@
     const sortField = urlParams.get('sort');
     const sortDirection = urlParams.get('direction');
 
+    if(!sortDirection) {
+        console.log('sortDirection is not set');
+        $('#sort-date-added').find('.sort-indicator').text('↓');
+    }
+
     function setArrowDirection(button, direction) {
         const currentIndicator = button.querySelector('.sort-indicator');
         if (direction === 'asc') {
@@ -176,16 +181,19 @@
 
     document.querySelectorAll('.sorting-buttons button').forEach(button => {
         const buttonSortField = button.getAttribute('data-sort');
-        if (sortField === buttonSortField) {
+        if(!sortDirection) {
+            $('.sort-indicator').text('↑');
+            $('#sort-date-added').find('.sort-indicator').text('↓');
+        } else if (sortField === buttonSortField) {
             setArrowDirection(button, sortDirection || 'asc');
         } else {
             setArrowDirection(button, 'asc');
         }
-        button.addEventListener('click', function() {
 
+        button.addEventListener('click', function() {
             const currentSortField = button.getAttribute('data-sort');
             const currentIndicator = button.querySelector('.sort-indicator');
-            let newDirection = 'asc';
+            let newDirection;
 
             if(currentIndicator.textContent === '↑') {
                 newDirection = 'desc';
