@@ -21,6 +21,8 @@ Backend: Django, Django ORM
 
 git clone git@github.com:gbi46/spa-comments-app.git
 cd spa-comments-app
+файл env.example переименовать в .env 
+и заменить данные доступа на свои
 
 2. Запуск
 
