@@ -34,3 +34,15 @@
         {% endfor %}
     </div>
 {% endif %}
+
+<script>
+    $(document).on('click', '.reply-btn', function() {
+        parentCommentId = $(this).data('comment_id');
+
+        if ($('#addCommentForm input[name="parent_comment_id"]').length === 0) {
+            $('<input type="hidden" name="parent_comment_id" value="' + parentCommentId + '">').insertBefore('#submitComment');
+        } else {
+            $('#addCommentForm input[name="parent_comment_id"]').val(parentCommentId);
+        }
+    });
+</script>
