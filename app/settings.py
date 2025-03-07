@@ -42,7 +42,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'csp.middleware.CSPMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,10 +50,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_SCRIPT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'",)
 
 ROOT_URLCONF = 'app.urls'
 
