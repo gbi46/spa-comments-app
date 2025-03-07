@@ -1,12 +1,36 @@
 from django.db import models
-
-from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.files.images import get_image_dimensions
 import bleach
 import re
+import os
+
+def validate_image(image):
+    width, height = get_image_dimensions(image)
+    valid_formats = ['image/jpeg', 'image/gif', 'image/png']
+
+    if image.content_type not in valid_formats:
+        raise ValidationError("Недопустимый формат изображения. Допустимые форматы: JPG, GIF, PNG.")
+    
+    if width > 320 or height > 240:
+        raise ValidationError("Изображение не должно превышать 320x240 пикселей.")
+
+    if width > 320 or height > 240:
+        from PIL import Image
+        img = Image.open(image)
+        img.thumbnail((320, 240))
+        img.save(image.path)
+
+def validate_txt_file(file):
+    if file.size > 100 * 1024:
+        raise ValidationError("Текстовый файл не должен превышать 100 КБ.")
+
+    if not file.name.endswith('.txt'):
+        raise ValidationError("Файл должен быть в формате .txt.")
 
 class Comment(models.Model):
+    file = models.FileField(upload_to='uploads/', null=True, blank=True, validators=[validate_image, validate_txt_file])
     text = models.TextField()
     user_name = models.CharField(max_length=100)
     email = models.EmailField()
